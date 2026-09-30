@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5309bf98aa7831e4686c5e941b008dfe, type: 3}
+  m_Name: BuildItem_ArcherTower
+  m_EditorClassIdentifier: 
+  displayName: Archer Tower
+  category: 1
+  shopIcon: {fileID: 21300000, guid: bda26e3ecb4efd54e87baeb2bafb8f2e, type: 3}
+  price: 75
+  prefab: {fileID: 3469893811991267835, guid: e4499a966b0008144b8f8921f777aeac, type: 3}
+  placementSprite: {fileID: 21300000, guid: bda26e3ecb4efd54e87baeb2bafb8f2e, type: 3}
+  footprint: {x: 1, y: 1}
