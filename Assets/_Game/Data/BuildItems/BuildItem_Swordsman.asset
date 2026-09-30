@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5309bf98aa7831e4686c5e941b008dfe, type: 3}
+  m_Name: BuildItem_Swordsman
+  m_EditorClassIdentifier: 
+  displayName: Swordsman
+  category: 0
+  shopIcon: {fileID: 6246832655069406539, guid: 36d3d880bf84fe945b511011d251aff7, type: 3}
+  price: 50
+  prefab: {fileID: 803096465964638733, guid: 998a459468c4bbd4897410b7f965503b, type: 3}
+  placementSprite: {fileID: 6246832655069406539, guid: 36d3d880bf84fe945b511011d251aff7, type: 3}
+  footprint: {x: 1, y: 1}
