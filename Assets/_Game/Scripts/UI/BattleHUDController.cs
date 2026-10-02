@@ -143,7 +143,7 @@ public sealed class BattleHUDController : MonoBehaviour {
 
         if (waveLabel != null) {
             waveLabel.text =
-                $"Onda: {waveSpawner.WaveDisplayName}";
+                $"{gameManager.CurrentWaveNumber} / {gameManager.TotalWaves}";
         }
 
         if (enemiesLabel != null) {

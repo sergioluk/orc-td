@@ -1,16 +1,20 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Health))]
-[RequireComponent(typeof(TowerAttack2D))]
-public sealed class TowerEntity2D : MonoBehaviour
-{
+public sealed class TowerEntity2D : MonoBehaviour {
     [Header("Definição")]
     [SerializeField]
     private TowerDefinition definition;
 
+    [Header("Componentes")]
+    [SerializeField]
+    private Collider2D gameplayCollider;
+
     private Health health;
 
     private TowerAttack2D towerAttack;
+
+    private bool destroyed;
 
     public TowerDefinition Definition =>
         definition;
@@ -18,27 +22,31 @@ public sealed class TowerEntity2D : MonoBehaviour
     public Health Health =>
         health;
 
-    private void Awake()
-    {
+    public bool IsDestroyed =>
+        destroyed;
+
+    private void Awake() {
         health =
             GetComponent<Health>();
 
         towerAttack =
             GetComponent<TowerAttack2D>();
-    }
 
-    private void OnEnable()
-    {
-        if (health != null)
-        {
-            health.Died += HandleDied;
+        if (gameplayCollider == null) {
+            gameplayCollider =
+                GetComponent<Collider2D>();
         }
     }
 
-    private void Start()
-    {
-        if (definition == null)
-        {
+    private void OnEnable() {
+        if (health != null) {
+            health.Died +=
+                HandleDied;
+        }
+    }
+
+    private void Start() {
+        if (definition == null) {
             Debug.LogError(
                 $"{name}: TowerDefinition não configurado.",
                 this
@@ -48,30 +56,89 @@ public sealed class TowerEntity2D : MonoBehaviour
             return;
         }
 
-        // Agora a vida vem dos dados da torre.
         health.Initialize(
             definition.MaxHealth
         );
+
+        destroyed = false;
     }
 
-    private void HandleDied()
-    {
-        if (towerAttack != null)
-        {
-            towerAttack.enabled = false;
+    private void HandleDied() {
+        if (destroyed)
+            return;
+
+        destroyed = true;
+
+        if (towerAttack != null) {
+            towerAttack.enabled =
+                false;
+        }
+
+        // A torre destruída não deve mais
+        // ser encontrada pelos inimigos
+        // como alvo de combate.
+        if (gameplayCollider != null) {
+            gameplayCollider.enabled =
+                false;
         }
 
         Debug.Log(
-            $"{name} foi destruída.",
+            $"{name} foi destruída e permanece no campo.",
             this
         );
     }
 
-    private void OnDisable()
-    {
-        if (health != null)
-        {
-            health.Died -= HandleDied;
+    public bool Repair() {
+        if (!destroyed ||
+            health == null ||
+            !health.IsDead) {
+            return false;
+        }
+
+        if (!health.ReviveFull()) {
+            return false;
+        }
+
+        destroyed = false;
+
+        if (gameplayCollider != null) {
+            gameplayCollider.enabled =
+                true;
+        }
+
+        if (towerAttack != null) {
+            towerAttack.enabled =
+                true;
+        }
+
+        Debug.Log(
+            $"{name} foi reparada.",
+            this
+        );
+
+        return true;
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("DEBUG/Repair Tower")]
+    private void DebugRepair() {
+        if (!Application.isPlaying) {
+            Debug.LogWarning(
+                "Use este comando durante o Play Mode.",
+                this
+            );
+
+            return;
+        }
+
+        Repair();
+    }
+#endif
+
+    private void OnDisable() {
+        if (health != null) {
+            health.Died -=
+                HandleDied;
         }
     }
 }

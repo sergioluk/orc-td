@@ -104,6 +104,21 @@ public sealed class UnitMovement2D : MonoBehaviour {
         combatSlotManager != null &&
         combatSlotIndex >= 0;
 
+    public bool IsMoving {
+        get;
+        private set;
+    }
+
+    public Vector2 CurrentMoveDirection {
+        get;
+        private set;
+    }
+
+    public Vector2 LastMoveDirection {
+        get;
+        private set;
+    } = new Vector2(-1f,-1f).normalized;
+
     public bool IsAtCombatSlot {
         get {
             if (!HasCombatSlot)
@@ -377,8 +392,13 @@ public sealed class UnitMovement2D : MonoBehaviour {
             remainingDistance
         );
 
-        Vector2 normalizedDirection =
-            direction / distance;
+        Vector2 normalizedDirection = direction / distance;
+
+        CurrentMoveDirection = normalizedDirection;
+
+        LastMoveDirection = normalizedDirection;
+
+        IsMoving = true;
 
         // Verifica quanto podemos andar na direção desejada.
         float allowedDistance = GetAllowedDistance(
@@ -542,7 +562,13 @@ public sealed class UnitMovement2D : MonoBehaviour {
     }
 
     private void StopMovement() {
-        rb.linearVelocity = Vector2.zero;
+        rb.linearVelocity =
+            Vector2.zero;
+
+        IsMoving = false;
+
+        CurrentMoveDirection =
+            Vector2.zero;
     }
 
 

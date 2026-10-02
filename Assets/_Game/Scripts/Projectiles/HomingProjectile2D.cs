@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public sealed class HomingProjectile2D : MonoBehaviour
-{
+public sealed class HomingProjectile2D : MonoBehaviour {
     [Header("Movimento")]
     [SerializeField, Min(0.1f)]
     private float moveSpeed = 6f;
@@ -24,18 +23,26 @@ public sealed class HomingProjectile2D : MonoBehaviour
 
     private bool initialized;
 
+    private HomingProjectilePool2D pool;
+
+    public void ConfigurePool(
+        HomingProjectilePool2D newPool) {
+        pool = newPool;
+    }
+
     public void Initialize(
         Health newTargetHealth,
         Transform newTargetPoint,
-        int newDamage)
-    {
+        int newDamage) {
         targetHealth =
             newTargetHealth;
 
         targetPoint =
             newTargetPoint != null
                 ? newTargetPoint
-                : newTargetHealth.transform;
+                : newTargetHealth != null
+                    ? newTargetHealth.transform
+                    : null;
 
         damage =
             Mathf.Max(
@@ -46,23 +53,19 @@ public sealed class HomingProjectile2D : MonoBehaviour
         initialized = true;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (!initialized)
             return;
 
-        // O alvo morreu ou foi removido.
         if (targetHealth == null ||
             !targetHealth.gameObject.activeInHierarchy ||
-            targetHealth.IsDead)
-        {
-            Destroy(gameObject);
+            targetHealth.IsDead) {
+            Release();
             return;
         }
 
-        if (targetPoint == null)
-        {
-            Destroy(gameObject);
+        if (targetPoint == null) {
+            Release();
             return;
         }
 
@@ -79,9 +82,7 @@ public sealed class HomingProjectile2D : MonoBehaviour
         float distance =
             difference.magnitude;
 
-        // Impacto.
-        if (distance <= hitDistance)
-        {
+        if (distance <= hitDistance) {
             HitTarget();
             return;
         }
@@ -103,8 +104,7 @@ public sealed class HomingProjectile2D : MonoBehaviour
             currentPosition +
             direction * movement;
 
-        if (rotateTowardsTarget)
-        {
+        if (rotateTowardsTarget) {
             float angle =
                 Mathf.Atan2(
                     direction.y,
@@ -121,16 +121,38 @@ public sealed class HomingProjectile2D : MonoBehaviour
         }
     }
 
-    private void HitTarget()
-    {
+    private void HitTarget() {
         if (targetHealth != null &&
-            !targetHealth.IsDead)
-        {
+            !targetHealth.IsDead) {
             targetHealth.TakeDamage(
                 damage
             );
         }
 
+        Release();
+    }
+
+    private void Release() {
+        if (pool != null) {
+            pool.Release(this);
+            return;
+        }
+
+        // Segurança caso a flecha seja criada
+        // sem um pool.
         Destroy(gameObject);
+    }
+
+    public void ResetProjectile() {
+        targetHealth = null;
+
+        targetPoint = null;
+
+        damage = 0;
+
+        initialized = false;
+
+        transform.rotation =
+            Quaternion.identity;
     }
 }

@@ -49,6 +49,8 @@ public sealed class PlacementManager2D : MonoBehaviour {
     private bool currentPlacementValid;
     private bool placementEnabled = true;
 
+    public bool IsPlacing => selectedItem != null;
+
     private void Start() {
         if (shopUI == null) {
             Debug.LogError(

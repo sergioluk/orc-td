@@ -25,6 +25,9 @@ public sealed class HeroMouseController2D : MonoBehaviour {
     // Inimigo selecionado atualmente.
     private Health currentEnemy;
 
+    private TargetHighlight2D
+    currentTargetHighlight;
+
     private void Awake() {
         unit = GetComponent<UnitEntity>();
 
@@ -115,32 +118,46 @@ public sealed class HeroMouseController2D : MonoBehaviour {
         MoveToPosition(worldPosition);
     }
 
-    private void SelectEnemy(Health enemyHealth) {
-        if (enemyHealth == null || enemyHealth.IsDead)
+    private void SelectEnemy(
+    Health enemyHealth) {
+        if (enemyHealth == null ||
+            enemyHealth.IsDead) {
             return;
+        }
 
-        // Evita selecionar novamente o mesmo inimigo
-        // e reiniciar desnecessariamente o cooldown.
+        // Evita selecionar novamente
+        // o mesmo inimigo.
         if (currentEnemy == enemyHealth)
             return;
 
+        // Remove o destaque do alvo anterior.
         ClearEnemyTarget();
 
-        currentEnemy = enemyHealth;
+        currentEnemy =
+            enemyHealth;
 
-        // Queremos saber quando esse Orc morrer.
-        currentEnemy.Died += HandleEnemyDied;
+        currentEnemy.Died +=
+            HandleEnemyDied;
+
+        // Procura o sistema visual no Orc.
+        currentTargetHighlight =
+            currentEnemy.GetComponent<
+                TargetHighlight2D>();
+
+        if (currentTargetHighlight != null) {
+            currentTargetHighlight
+                .SetHighlighted(true);
+        }
 
         float approachDistance =
-            unit.Definition.AttackRange * 0.8f;
+            unit.Definition.AttackRange *
+            0.8f;
 
-        // Aproxima-se do Orc.
         movement.SetTarget(
             currentEnemy.transform,
             approachDistance
         );
 
-        // Configura o alvo de ataque.
         attack.SetTarget(
             currentEnemy,
             currentEnemy.transform
@@ -166,8 +183,18 @@ public sealed class HeroMouseController2D : MonoBehaviour {
     }
 
     private void ClearEnemyTarget() {
+        // Primeiro remove o visual.
+        if (currentTargetHighlight != null) {
+            currentTargetHighlight
+                .SetHighlighted(false);
+        }
+
+        currentTargetHighlight =
+            null;
+
         if (currentEnemy != null) {
-            currentEnemy.Died -= HandleEnemyDied;
+            currentEnemy.Died -=
+                HandleEnemyDied;
         }
 
         currentEnemy = null;

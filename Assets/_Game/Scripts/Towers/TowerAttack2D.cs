@@ -9,7 +9,7 @@ public sealed class TowerAttack2D : MonoBehaviour
 
     [Header("Projétil")]
     [SerializeField]
-    private HomingProjectile2D projectilePrefab;
+    private HomingProjectilePool2D projectilePool;
 
     [SerializeField]
     private Transform firePoint;
@@ -26,10 +26,14 @@ public sealed class TowerAttack2D : MonoBehaviour
 
     private float attackTimer;
 
-    private void Awake()
-    {
+    private void Awake() {
         tower =
             GetComponent<TowerEntity2D>();
+
+        if (projectilePool == null) {
+            projectilePool =
+                HomingProjectilePool2D.Instance;
+        }
     }
 
     private void Update()
@@ -168,11 +172,9 @@ public sealed class TowerAttack2D : MonoBehaviour
             return;
         }
 
-        if (projectilePrefab == null)
-        {
+        if (projectilePool == null) {
             Debug.LogError(
-                $"{name}: Projectile Prefab " +
-                "não configurado.",
+                $"{name}: Projectile Pool não configurado.",
                 this
             );
 
@@ -184,23 +186,18 @@ public sealed class TowerAttack2D : MonoBehaviour
                 ? firePoint.position
                 : transform.position;
 
-        HomingProjectile2D projectile =
-            Instantiate(
-                projectilePrefab,
-                spawnPosition,
-                Quaternion.identity
-            );
-
         Transform projectileTargetPoint =
-    GetProjectileTargetPoint(
-        currentTarget
-    );
+        GetProjectileTargetPoint(
+            currentTarget
+        );
 
-projectile.Initialize(
-    currentTarget,
-    projectileTargetPoint,
-    tower.Definition.AttackDamage
-);
+        projectilePool.Spawn(
+            spawnPosition,
+            Quaternion.identity,
+            currentTarget,
+            projectileTargetPoint,
+            tower.Definition.AttackDamage
+        );
 
         attackTimer =
             tower.Definition.AttackInterval;

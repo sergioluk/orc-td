@@ -14,7 +14,7 @@ TagManager:
   - EnemyUnit
   - FriendlyUnit
   - EnemySelectable
-  - 
+  - Selectable
   - 
   - 
   - 
